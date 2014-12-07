@@ -1,0 +1,21 @@
+#!/bin/sh
+#logger -t "xxxx" "$BUTTON $ACTION"
+
+SW1=false
+SW2=false
+grep -qe "sw1.*in  hi" /sys/kernel/debug/gpio && SW1=true
+grep -qe "sw2.*in  hi" /sys/kernel/debug/gpio && SW2=true
+
+! $SW1 &&  $SW2 &&(
+	logger "button -> 3g"
+) && exit 0
+
+$SW1 && ! $SW2 &&(
+	logger "button -> wisp"
+) && exit 0
+
+$SW1 &&  $SW2 &&(
+	logger "button -> ap"
+) && exit 0
+
+logger -t "button hotplug" "should not happen"
